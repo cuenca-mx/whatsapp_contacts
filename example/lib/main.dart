@@ -13,7 +13,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  List<dynamic> _contacts = [];
 
   @override
   void initState() {
@@ -23,22 +23,16 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await WhatsappContacts.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
+    List<dynamic> contacts;
     try {
       final handler = PermissionHandler();
       final permission = PermissionGroup.contacts;
       final status = await handler.checkPermissionStatus(permission);
-      if (status == PermissionStatus.granted) return;
-      final statuses = await handler.requestPermissions([permission]);
-      final contacts = await WhatsappContacts.contacts;
-      print(contacts.toString());
+      if (status != PermissionStatus.granted) {
+        final statuses = await handler.requestPermissions([permission]);
+      }
+
+      contacts = await WhatsappContacts.contacts;
     } on PlatformException {}
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -47,7 +41,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     setState(() {
-      _platformVersion = platformVersion;
+      _contacts = contacts;
     });
   }
 
@@ -58,8 +52,16 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+        body: ListView.builder(
+          itemCount: _contacts.length,
+          itemBuilder: (context, index) {
+            return Card(
+              child: ListTile(
+                title: Text(_contacts[index]['name']),
+                subtitle: Text(_contacts[index]['phone_number']),
+              ),
+            );
+          },
         ),
       ),
     );

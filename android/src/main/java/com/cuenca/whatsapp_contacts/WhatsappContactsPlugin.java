@@ -23,7 +23,7 @@ public class WhatsappContactsPlugin implements MethodCallHandler {
      * Plugin registration.
      */
     public static void registerWith(Registrar registrar) {
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "whatsapp_contacts");
+        final MethodChannel channel = new MethodChannel(registrar.messenger(), "com.cuenca.plugin.whatsapp_contacts");
         channel.setMethodCallHandler(new WhatsappContactsPlugin(registrar));
     }
 
