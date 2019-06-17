@@ -45,6 +45,7 @@ public class WhatsappContactsPlugin implements MethodCallHandler {
         }
     }
 
+    // Implementation based on https://stackoverflow.com/questions/35448250/how-to-get-whatsapp-contacts-from-android by @mansukh-ahir
     private ArrayList<HashMap<String, String>> getWhatsappContacts() {
         Context context = registrar.context();
         ContentResolver cr = context.getContentResolver();
@@ -59,44 +60,46 @@ public class WhatsappContactsPlugin implements MethodCallHandler {
 
         ArrayList<HashMap<String, String>> contacts = new ArrayList<>();
 
-        if (contactCursor == null || contactCursor.getCount() == 0) {
+        if (contactCursor == null || contactCursor.getCount() == 0 || !contactCursor.moveToFirst()) {
             return contacts;
         }
 
-        if (contactCursor.moveToFirst()) {
-            do {
-                //whatsappContactId for get Number,Name,Id ect... from  ContactsContract.CommonDataKinds.Phone
-                String whatsappContactId = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.RawContacts.CONTACT_ID));
+        do {
+            //whatsappContactId for get Number,Name,Id ect... from  ContactsContract.CommonDataKinds.Phone
+            String whatsappContactId = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.RawContacts.CONTACT_ID));
 
-                if (whatsappContactId != null) {
-                    //Get Data from ContactsContract.CommonDataKinds.Phone of Specific CONTACT_ID
-                    Cursor whatsAppContactCursor = cr.query(
-                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                            new String[]{ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
-                                    ContactsContract.CommonDataKinds.Phone.NUMBER,
-                                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME},
-                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                            new String[]{whatsappContactId}, null);
+            if (whatsappContactId == null) {
+                continue;
+            }
+            //Get Data from ContactsContract.CommonDataKinds.Phone of Specific CONTACT_ID
+            Cursor whatsAppContactCursor = cr.query(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    new String[]{ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+                            ContactsContract.CommonDataKinds.Phone.NUMBER,
+                            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME},
+                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                    new String[]{whatsappContactId}, null);
 
-                    if (whatsAppContactCursor != null) {
-                        whatsAppContactCursor.moveToFirst();
-                        String id = whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
-                        String name = whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                        String number = whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            if (whatsAppContactCursor == null) {
+                continue;
+            }
 
-                        whatsAppContactCursor.close();
+            whatsAppContactCursor.moveToFirst();
+            String id = whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
+            String name = whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+            String number = whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
-                        HashMap<String, String> contact = new HashMap<>();
-                        contact.put("id", id);
-                        contact.put("name", name);
-                        contact.put("number", number);
+            whatsAppContactCursor.close();
 
-                        contacts.add(contact);
-                    }
-                }
-            } while (contactCursor.moveToNext());
-            contactCursor.close();
-        }
+            HashMap<String, String> contact = new HashMap<>();
+            contact.put("id", id);
+            contact.put("name", name);
+            contact.put("number", number);
+
+            contacts.add(contact);
+        } while (contactCursor.moveToNext());
+
+        contactCursor.close();
 
         return contacts;
     }
