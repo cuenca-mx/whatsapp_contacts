@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:whatsapp_contacts/whatsapp_contacts.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('whatsapp_contacts');
+  const MethodChannel channel = MethodChannel('com.cuenca.whatsapp_contacts');
 
   setUp(() {
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
