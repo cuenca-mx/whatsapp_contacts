@@ -78,21 +78,19 @@ public class WhatsappContactsPlugin implements MethodCallHandler {
                     ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
                     new String[]{whatsappContactId}, null);
 
-            if (whatsAppContactCursor == null) {
+            if (whatsAppContactCursor == null || whatsAppContactCursor.getCount() == 0 || !whatsAppContactCursor.moveToFirst()) {
                 continue;
             }
 
-            whatsAppContactCursor.moveToFirst();
-            String name = whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-            String number = whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-
+            do {
+                String name = whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                String number = whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                HashMap<String, String> contact = new HashMap<>();
+                contact.put("name", name);
+                contact.put("phone_number", number);
+                contacts.add(contact);
+            } while (whatsAppContactCursor.moveToNext());
             whatsAppContactCursor.close();
-
-            HashMap<String, String> contact = new HashMap<>();
-            contact.put("name", name);
-            contact.put("phone_number", number);
-
-            contacts.add(contact);
         } while (contactCursor.moveToNext());
 
         contactCursor.close();
