@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,8 +51,10 @@ public class WhatsappContactsPlugin implements MethodCallHandler {
 
         Cursor contactCursor = cr.query(
                 ContactsContract.RawContacts.CONTENT_URI,
-                new String[]{ContactsContract.RawContacts._ID,
-                        ContactsContract.RawContacts.CONTACT_ID},
+                new String[]{
+                        ContactsContract.RawContacts._ID,
+                        ContactsContract.RawContacts.CONTACT_ID,
+                },
                 ContactsContract.RawContacts.ACCOUNT_TYPE + "= ?",
                 new String[]{"com.whatsapp"},
                 null);
@@ -63,9 +66,10 @@ public class WhatsappContactsPlugin implements MethodCallHandler {
         }
 
         do {
-            String whatsappContactId = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.RawContacts.CONTACT_ID));
+            String contactId = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.RawContacts.CONTACT_ID));
+            String rawContactId = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.RawContacts._ID));
 
-            if (whatsappContactId == null) {
+            if (contactId == null || rawContactId == null) {
                 continue;
             }
 
@@ -74,9 +78,15 @@ public class WhatsappContactsPlugin implements MethodCallHandler {
                     new String[]{
                             ContactsContract.CommonDataKinds.Phone.NUMBER,
                             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+
                     },
-                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                    new String[]{whatsappContactId}, null);
+                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? AND "
+                            + ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID + " = ? ",
+                    new String[]{
+                            contactId,
+                            rawContactId,
+                    },
+                    null);
 
             if (whatsAppContactCursor == null || whatsAppContactCursor.getCount() == 0 || !whatsAppContactCursor.moveToFirst()) {
                 continue;
