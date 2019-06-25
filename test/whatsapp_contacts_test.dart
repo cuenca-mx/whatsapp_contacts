@@ -3,19 +3,23 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:whatsapp_contacts/whatsapp_contacts.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('com.cuenca.whatsapp_contacts');
+  const MethodChannel channel = MethodChannel('com.cuenca.plugin.whatsapp_contacts');
 
   setUp(() {
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      return '42';
-    });
+    channel.setMockMethodCallHandler((MethodCall methodCall) async => [
+          {'phone': '12345', 'name': 'foo'},
+          {'phone': '43215', 'name': 'bar'},
+        ]);
   });
 
   tearDown(() {
     channel.setMockMethodCallHandler(null);
   });
 
-  test('getPlatformVersion', () async {
-    expect(await WhatsappContacts.platformVersion, '42');
+  test('get whatsapp contacts', () async {
+    expect(await WhatsappContacts.contacts, [
+      {'phone': '12345', 'name': 'foo'},
+      {'phone': '43215', 'name': 'bar'},
+    ]);
   });
 }
