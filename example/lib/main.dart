@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -32,6 +34,8 @@ class _MyAppState extends State<MyApp> {
         final statuses = await handler.requestPermissions([permission]);
       }
 
+      // Implemented only for android
+      if (!Platform.isAndroid) return;
       contacts = await WhatsappContacts.contacts;
     } on PlatformException {}
 

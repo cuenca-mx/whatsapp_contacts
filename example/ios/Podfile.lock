@@ -1,0 +1,28 @@
+PODS:
+  - Flutter (1.0.0)
+  - permission_handler (2.2.0):
+    - Flutter
+  - whatsapp_contacts (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `.symlinks/flutter/ios`)
+  - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
+  - whatsapp_contacts (from `.symlinks/plugins/whatsapp_contacts/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: ".symlinks/flutter/ios"
+  permission_handler:
+    :path: ".symlinks/plugins/permission_handler/ios"
+  whatsapp_contacts:
+    :path: ".symlinks/plugins/whatsapp_contacts/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
+  permission_handler: 976a8a94c3443d23fe33c11e98277d471f0e543d
+  whatsapp_contacts: a42c7230011e5fb16725c7354c34be555becbc4e
+
+PODFILE CHECKSUM: ebd43b443038e611b86ede96e613bd6033c49497
+
+COCOAPODS: 1.6.0
